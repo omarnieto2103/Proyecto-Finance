@@ -93,14 +93,6 @@ La aplicación abre en modo oscuro con once pestañas navegables. El archivo `da
 6. En la pestaña **Rendimiento**, revisar la rentabilidad acumulada y la rentabilidad E.A. por activo y del portafolio completo.
 7. En la pestaña **Simulación**, probar una inversión histórica en cualquier acción del catálogo.
 
-## Fórmulas financieras
-
-- **Rentabilidad acumulada:** `(Valor_actual + Ingresos − Costos − Valor_invertido) / Valor_invertido × 100`
-- **Rentabilidad E.A.:** `((1 + r)^(365/días) − 1) × 100`
-- **Valoración CDT:** `Monto × (1 + Tasa_EA)^(Días/360)` con retención del 7% sobre intereses
-- **Dividendos netos:** `Cantidad × Dividendo_por_acción × (1 − 0.04)`
-- **Costo promedio ponderado:** `(Costo_previo + Compra_nueva) / (Cantidad_previa + Cantidad_nueva)`
-
 ## Retenciones aplicadas
 
 | Concepto | Retención |
