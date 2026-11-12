@@ -105,21 +105,3 @@ La aplicación abre en modo oscuro con once pestañas navegables. El archivo `da
 ![Diagrama de clases](docs/capturas/uml.png)
 
 También disponible en formato PlantUML: [docs/uml/diagrama_clases.puml](docs/uml/diagrama_clases.puml).
-
-## Documentación adicional
-
-La wiki del repositorio contiene documentación extendida sobre el diseño, la metodología de cálculo y la guía de uso:
-
-- [Wiki del proyecto](../../wiki)
-
-## Autor
-
-- Omar Nieto
-
-## Licencia
-
-MIT. Ver [LICENSE](LICENSE).
-
-## Contexto académico
-
-Proyecto desarrollado como trabajo académico para la asignatura de seguimiento de portafolios de inversión, cumpliendo con los requisitos de división modular, auditoría financiera, cálculo de rentabilidad y documentación.
