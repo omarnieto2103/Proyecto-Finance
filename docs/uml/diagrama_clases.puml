@@ -1,0 +1,142 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #F8FAFC
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #334155
+    ArrowColor #38BDF8
+}
+skinparam stereotypeCBackgroundColor #0F172A
+skinparam stereotypeCFontColor #F8FAFC
+
+title Diagrama de clases - Terminal Financiera de Portafolio
+
+package "models" <<Folder>> {
+    class Accion <<Entity>> {
+        + simbolo: str
+        + nombre: str
+        + cantidad: float
+        + costo_total_cop: float
+        + precio_promedio_cop: float
+        + moneda_original: str
+        + bolsa: str
+        + costo_unitario(): float
+        + valor_mercado(precio_cop): float
+        + ganancia(precio_cop): float
+        + rentabilidad_pct(precio_cop): float
+        + agregar_compra(cantidad, costo_total_cop): void
+        + reducir_venta(cantidad): float
+        + a_dict(): dict
+        + {static} desde_dict(datos): Accion
+    }
+}
+
+package "api" <<Folder>> {
+    class ClienteAPI <<Service>> {
+        - _cache_tasas_usd: dict
+        - _cache_fx_hist: dict
+        - _cache_cotizaciones: dict
+        + obtener_tasas_usd(): dict
+        + obtener_tasas_cop(): dict
+        + obtener_trm(fecha): float
+        + consultar_accion(simbolo, rango): Cotizacion
+        + convertir(monto, desde, hacia, fecha, spread_bps): float
+    }
+
+    class Cotizacion <<DTO>> {
+        + simbolo: str
+        + precio_original: float
+        + moneda_original: str
+        + precio_cop: float
+        + bolsa: str
+        + serie_cop: list
+        + dividendos: list
+        + es_aproximado: bool
+    }
+}
+
+package "services" <<Folder>> {
+    class GestorPortafolio <<Service>> {
+        + archivo: str
+        + datos: dict
+        + cargar(): dict
+        + guardar(): void
+        + registrar_compra_accion(simbolo, cantidad, precio_unitario, comision, fecha, moneda, trm): dict
+        + registrar_venta_accion(simbolo, cantidad, precio_unitario, comision, fecha, moneda, trm): dict
+        + registrar_cdt(monto, tasa_ea, plazo_dias, fecha_inicio, entidad): dict
+        + registrar_bono(nombre, monto, tasa_anual, plazo_meses, fecha_inicio): dict
+        + registrar_tes(tipo, monto, cupon_anual, plazo_anios, fecha_inicio): dict
+        + registrar_dividendo(simbolo, monto_por_accion, fecha, retencion_pct): dict
+        + listar_posiciones(): list
+        + total_invertido_cop(): float
+    }
+
+    class FilaAuditoria <<DTO>> {
+        + activo: str
+        + tipo: str
+        + invertido_cop: float
+        + valor_actual_cop: float
+        + ingresos_cop: float
+        + costos_cop: float
+        + rent_acum_pct: float
+        + dias: int
+        + rent_ea_pct: float
+        + observacion: str
+    }
+
+    class ResumenPortafolio <<DTO>> {
+        + total_invertido: float
+        + valor_actual: float
+        + ingresos_totales: float
+        + costos_totales: float
+        + rent_acum_pct: float
+        + rent_ea_pct: float
+        + peso_renta_fija: float
+        + peso_renta_variable: float
+        + filas: list
+    }
+
+    class AuditoriaFinanciera <<Utility>> {
+        + {static} leer_numero(texto, nombre, permitir_cero): float
+        + {static} moneda(x): str
+        + {static} pct(x, signo): str
+        + {static} valor_cdt(monto, tasa_ea, dias, base_dias): dict
+        + {static} valor_bono_cupon(valor_nominal, tasa_cupon_ea, dias, base_dias): dict
+        + {static} rentabilidad_acumulada(valor_invertido, valor_actual, ingresos, costos): float
+        + {static} rentabilidad_ea(rent_acum_pct, dias, base_dias): float
+        + {static} auditar_posicion_accion(...): FilaAuditoria
+        + {static} auditar_cdt(cdt, fecha_corte): FilaAuditoria
+        + {static} consolidar_portafolio(filas, dias): ResumenPortafolio
+        + {static} tabla_auditoria(filas): list
+    }
+}
+
+package "ui" <<Folder>> {
+    class AppFinanciera <<UI>> {
+        + api: ClienteAPI
+        + gestor: GestorPortafolio
+        + valores_mercado: dict
+        + cambiar_pestana(nombre_tab): void
+        + refrescar(): void
+        + refrescar_resumen(): void
+        + refrescar_rendimiento(): void
+        + actualizar_mercado(): void
+        + operar_accion(tipo): void
+        + consultar_accion(): void
+        + registrar_dividendo(): void
+        + simular(): void
+    }
+}
+
+AppFinanciera --> ClienteAPI : usa
+AppFinanciera --> GestorPortafolio : usa
+AppFinanciera ..> Accion : construye
+AppFinanciera ..> FilaAuditoria : consume
+AppFinanciera ..> ResumenPortafolio : consume
+AppFinanciera ..> AuditoriaFinanciera : invoca
+GestorPortafolio ..> Accion : persiste
+ClienteAPI ..> Cotizacion : retorna
+AuditoriaFinanciera ..> FilaAuditoria : produce
+AuditoriaFinanciera ..> ResumenPortafolio : produce
+
+@enduml
